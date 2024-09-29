@@ -4,7 +4,7 @@ date: 2024-09-29 23:04:32
 tags:
     - CICD
 description: 本篇文章记录如何使用GitHub Action自动化部署Hexo博客
-cover: https://raw.gitmirror.com/ByteQuestor/picture/blob/main/GitHub-Logo.png
+cover: https://raw.gitmirror.com/ByteQuestor/picture/main/GitHub-Logo.png
 ---
 # 关于自动化部署个人博客
 
