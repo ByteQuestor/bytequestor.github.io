@@ -47,5 +47,5 @@ jobs:
           git init
           git add -A
           git commit -m "Deploy to GitHub Pages"
-          git remote ad origin https://${{ secrets.GH_TOKEN }}@github.com/ByteQuestor/ByteQuestor.github.io.git
+          git remote add origin https://${{ secrets.GH_TOKEN }}@github.com/ByteQuestor/ByteQuestor.github.io.git
           git push origin HEAD:gh-pages -f
