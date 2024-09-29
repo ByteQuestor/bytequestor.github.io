@@ -1,0 +1,36 @@
+- class_name: 友情链接
+  class_desc: 那些人，那些事
+  link_list:
+    - name: 恩师
+      link: https://github.com/JasonkayZK
+      avatar: https://avatars.githubusercontent.com/u/40811521?v=4
+      descr: 传道授业   
+    - name: 道友
+      link: https://github.com/alonelovely/alonelovely
+      avatar: https://avatars.githubusercontent.com/u/180512440?v=4
+      descr: 共同进步
+    - name:  在线大富翁小游戏(单机)
+      link: https://alonelovely.github.io/
+      avatar: https://cbu01.alicdn.com/img/ibank/O1CN01oxeMeE2AT1cG5jySE_!!2794818203-0-cib.jpg
+      descr: 放松小游戏
+    - name:  跑步记录
+      link: https://bytequestor.github.io/running_page/
+      avatar: 
+      descr: 我的跑步记录
+- class_name: 网站
+  class_desc: 值得推荐的网站
+  link_list:
+    - name: Youtube
+      link: https://www.youtube.com/
+      avatar: https://i.loli.net/2020/05/14/9ZkGg8v3azHJfM1.png
+      descr: 视频网站
+    - name: Weibo
+      link: https://www.weibo.com/
+      avatar: https://i.loli.net/2020/05/14/TLJBum386vcnI1P.png
+      descr: 中国最大社交分享平台
+    - name: Twitter
+      link: https://twitter.com/
+      avatar: https://i.loli.net/2020/05/14/5VyHPQqR6LWF39a.png
+      descr: 社交分享平台
+    
+      
