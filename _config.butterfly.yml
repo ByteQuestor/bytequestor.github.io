@@ -45,11 +45,11 @@ social:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: /img/myhead.png
+favicon: https://raw.gitmirror.com//ByteQuestor/picture/main/myhead.png
 
 # Avatar (頭像)
 avatar:
-  img: ./img/myhead.png
+  img: https://raw.gitmirror.com//ByteQuestor/picture/main/myhead.png
   effect: false
 
 # Disable all banner image
