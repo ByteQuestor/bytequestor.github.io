@@ -239,7 +239,9 @@ aside:
       link: https://github.com/ByteQuestor
   card_announcement:
     enable: true
-    content: 一定是平时练习总是差不多差不多,关键时刻总是差一点 -- 《宝莲灯》
+    content: 
+    一定是平时练习总是 差不多 差不多
+    关键时刻总是差一点 
   card_recent_post:
     enable: true
     limit: 5 # if set 0 will show all
