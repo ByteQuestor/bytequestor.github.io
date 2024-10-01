@@ -43,13 +43,13 @@ passwd
 # 然后输入新密码 000000
 ```
 
-《001》
+![修改密码](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/001.jpg)
 
 然后可以建个快照
 
 ## 系统环境准备
 
-本次用的系统内核为`5.1`比较新，因此去[OpenStack packages for RHEL and CentOS — Installation Guide documentation](https://docs.openstack.org/install-guide/environment-packages-rdo.html)
+本次用的系统内核为`5.1`比较新，参考文档[OpenStack packages for RHEL and CentOS — Installation Guide documentation](https://docs.openstack.org/install-guide/environment-packages-rdo.html)
 
 **注意：重启网卡的命令有区别**
 
@@ -85,7 +85,7 @@ yum install -y chrony
 vim /etc/chrony.conf
 ```
 
-《002》
+![时间](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/002.jpg)
 
 重启
 
@@ -121,7 +121,7 @@ dnf list | grep openstack
 
 如下图：我们只能选择如下，因为没配置其他版本的源（如果要安装`queens`版就不行）
 
-《003》
+![关于yum源](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/003.jpg)
 
 安装命令（本次安装T版）
 
@@ -133,7 +133,7 @@ yum install python3-openstackclient	# 这个计算节点不用装
 
 出现如下算成功
 
-《004》
+![关于yum源](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/004.jpg)
 
 ---
 
@@ -213,7 +213,7 @@ systemctl start mariadb.service
 mysql_secure_installation
 ```
 
-《005》
+![关于yum源](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/005.jpg)
 
 ## 安装消息队列【controller节点】
 
