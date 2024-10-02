@@ -4,6 +4,7 @@ date: 2024-10-02 22:09:52
 tags:
     - k8s
 cover: https://raw.gitmirror.com/ByteQuestor/picture/main/k8s130.png
+description: 使用3台Centos7.9手工部署k8s，以加深对k8s的理解
 ---
 
 # 环境准备
