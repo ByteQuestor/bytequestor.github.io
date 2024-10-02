@@ -132,7 +132,7 @@ yum -y install cri-dockerd-0.3.1-3.el7.x86_64.rpm
 
 配置沙盒（Pause）镜像
 
-> 由于阿里的弃用了，因此直接配置`dockerHub`的
+<div style="color: red; font-weight: bold;">     注意: 阿里源已被弃用，配置下一行的DockerHub源。 </div>
 
 ```shell
 sed -i '/ExecStart/s#dockerd#& --network-plugin=cni --pod-infra-container-image=registry.aliyuncs.com/google_containers/pause:3.9#' /usr/lib/systemd/system/cri-docker.service
