@@ -172,10 +172,10 @@ reward:
   QR_code:
      - img: https://raw.gitmirror.com/ByteQuestor/picture/main/paywx.png
        link:
-       text: wechat
+       text: 微信投喂
      - img: https://raw.gitmirror.com/ByteQuestor/picture/main/zfbbpay.png
        link:
-       text: alipay
+       text: 支付宝投喂
 
 # Post edit
 # Easily browse and edit blog source code online.
