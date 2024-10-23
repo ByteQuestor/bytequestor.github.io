@@ -2,7 +2,7 @@
 title: 在win上配置快捷键启动应用
 date: 2024-10-23 11:02:59
 tags:
-    - tag
+    - windows
 cover: https://raw.gitmirror.com/ByteQuestor/picture/main/windows.jpg
 description: 最近觉得使用终端很酷，所以配置一下在win上快捷键启动应用程序（主要是快捷键启动终端）
 ---
