@@ -170,7 +170,7 @@ reward:
   enable: true
   text:
   QR_code:
-     - img: https://raw.gitmirror.com/ByteQuestor/picture/main/paywx.png
+     - img: https://raw.gitmirror.com/ByteQuestor/picture/main/paywx.png 
        link:
        text: 微信投喂
      - img: https://raw.gitmirror.com/ByteQuestor/picture/main/zfbbpay.png
@@ -776,13 +776,16 @@ subtitle:
     - 以彗星为龙，以彗星为绳结。描绘出割裂的彗星舞动的形态。又是一轮岁月。
     - 在这么大的世界里，能够遇见你竟然要如此用力。
     - 穿梭错位的时空，仰望陨落的星辰，你没留下你的名字，我却无法忘记那句‘我喜欢你’。
+    - 我不会离开你 再也不会离开你 好不容易终于追上你的啊
     - 你可知道你的名字解释了我的一生，碎了漫天的往事，与世无争。
     - 大概我的表情一直是要哭出来一样吧。所以别人才会即使想放手也放手不了，在我看来反而演变成了擅自的关心吧。
+    - 我以为你在我手心写下的是你的名字，我打开之后发现是‘喜欢你’
     - 重要的人，不能忘记的人，不想忘记的人。  你，是谁？
     - 醒来的时候 不知道自己为什么哭 时常会有的事情 做过的梦总是回想不起 只是 一种有什么消失的丧失感。
     - 重要的人,不想忘记的人，绝对不能忘的人，就算我不记得你的名字，我也会一直一直拼命的寻找你。
     - 假如我们相遇，肯定一眼就能认出彼此。
     - 彼方为谁，无我有问。九月露湿，待君之前。
+    
 
 # Loading Animation (加載動畫)
 preloader:
