@@ -161,21 +161,21 @@ toc:
 post_copyright:
   enable: true
   decode: false
-  author_href:
+  author_href: https://github.com/ByteQuestor
   license: CC BY-NC-SA 4.0
   license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 # Sponsor/reward
 reward:
-  enable: false
+  enable: true
   text:
   QR_code:
-    # - img: /img/wechat.jpg
-    #   link:
-    #   text: wechat
-    # - img: /img/alipay.jpg
-    #   link:
-    #   text: alipay
+     - img: https://raw.gitmirror.com/ByteQuestor/picture/main/paywx.png
+       link:
+       text: wechat
+     - img: https://raw.gitmirror.com/ByteQuestor/picture/main/zfbbpay.png
+       link:
+       text: alipay
 
 # Post edit
 # Easily browse and edit blog source code online.
