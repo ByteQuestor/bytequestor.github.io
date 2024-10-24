@@ -13,15 +13,24 @@ description: 最近觉得使用终端很酷，所以配置一下在win上快捷�
 
 在任意位置写一个文件（命名为`*.ahk`，比如`openTabbby.ahk`），内容如下
 
-```ahk
-#!t::
-Run "C:\Program Files\Tabby\Tabby.exe"
-Return
-```
+~~#!t::~~
+~~Run "C:\Program Files\Tabby\Tabby.exe"~~
+~~Return~~
 
 这个代码的意思是：按下`win + alt + t`即可打开下面的安装目录
 
 注意把`C:\Program Files\Tabby\Tabby.exe`替换为自定义安装的目录
+
+上面那个代码有问题，开机重启后能启动tabby，但是无法连接上终端，修改为以下
+```ahk
+#!t::
+If WinExist("ahk_exe Tabby.exe") {
+    WinClose, ahk_exe Tabby.exe
+    Sleep 1000 ; 等待一小段时间确保关闭完成
+}
+Run, "D:\root\Tools\Tabby\Tabby.exe"
+Return
+```
 
 + 运行
 
