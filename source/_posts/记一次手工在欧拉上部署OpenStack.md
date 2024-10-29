@@ -49,7 +49,7 @@ passwd
 
 留下如下配置即可：
 
-`new_1.png`
+![网卡配置](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/new_1.png)
 
 **注意：重启网卡的命令有区别**
 
@@ -1631,9 +1631,7 @@ neutron agent-list
 ```
 
 完美成功
-
-`new_neutron_success.png`
-
+![成功](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/new_neutron_success.png)
 ---
 
 这些不用管
