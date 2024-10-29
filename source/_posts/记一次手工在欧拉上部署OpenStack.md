@@ -1663,14 +1663,18 @@ vim /etc/openstack-dashboard/local_settings
 配置内容
 
 ```shell
+# xx
 OPENSTACK_HOST = "controller"
+# xx
 ALLOWED_HOSTS = ["*"]
+# 取消注释
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': 'controller:11211',
     },
 }
+# xx
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 OPENSTACK_API_VERSIONS = {
@@ -1693,7 +1697,17 @@ WSGIApplicationGroup %{GLOBAL}
 
 ### 解决问题
 
+> 直接启动，不存在问题
+
+```shell
+systemctl restart httpd.service memcached.service
+```
+
+如果出现问题，一般是`python`版本问题，软连接一下即可
+
 > 访问地址（存在的问题是：登录进去后，直接跳转`apache`测试页面）
+>
+> 错误日志位置：`/var/log/httpd/openstack-dashboard-error_log`
 
 ```shell
 http://192.168.100.10/dashboard/auth/login/
@@ -1810,6 +1824,12 @@ vim /etc/openstack-dashboard/local_settings
 ```shell
 chown -R nova.nova $文件夹
 ```
+
+```shell
+chown -R nova.nova /usr/lib/python3.9/site-packages/
+```
+
+
 
 这样创建的云主机是可以用`shell`连接的，还可以上网
 
