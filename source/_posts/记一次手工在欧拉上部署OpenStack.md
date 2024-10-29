@@ -15,26 +15,20 @@ description: 一直对OpenStack一知半解，在欧拉上手工部署一下Open
 >
 > https://docs.openstack.org/zh_CN/
 >
-> https://docs.openstack.org/install-guid
-
-# 规划
-
-+ `keystone`
-+ `glance`
-+ `placement`
-+ `nova`
-+ `neutron`
-+ `dashboard`
-+ `cinder`
-+ `swift`
-
----
+> https://docs.openstack.org/install-guide
 
 # 环境准备
 
 ## 虚拟环境准备
 
 利用`VMWare`安装，与以往不同的是，要选`centos8`，内存推荐`5G`以上，`4核`，根据自身实际情况配置
+
+| 主机         | `IP`(单网卡NAT)  | 配置             |
+| ------------ | ---------------- | ---------------- |
+| `controller` | `192.168.100.10` | `4v_8G_100G`     |
+| `compute`    | `192.168.100.20` | `4V_5G_100G_50G` |
+
+网关：`192.168.100.2`
 
 欧拉基本上跟`Centos`一样，安装过程略，区别是**不能弱密码**（但是可以进去后修改为弱密码）：
 
@@ -51,12 +45,36 @@ passwd
 
 本次用的系统内核为`5.1`比较新，参考文档[OpenStack packages for RHEL and CentOS — Installation Guide documentation](https://docs.openstack.org/install-guide/environment-packages-rdo.html)
 
+### 配置网卡
+
+留下如下配置即可：
+
+`new_1.png`
+
 **注意：重启网卡的命令有区别**
 
 ```shell
 nmcli c reload
 nmcli c up eth0
 ```
+
+注意：此阶段需要能`ping`通百度表示成功
+
+### 更改主机名
+
+**controller**
+
+```shell
+hostnamectl set-hostname controller && bash
+```
+
+**compute**
+
+```shell
+hostnamectl set-hostname compute && bash
+```
+
+
 
 ---
 
@@ -69,20 +87,38 @@ systemctl stop firewalld && systemctl disable firewalld
 echo "192.168.100.10 controller" >> /etc/hosts
 echo "192.168.100.20 compute" >> /etc/hosts
 sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config; setenforce 0;
-```
 
-# 部署OpenStack基本环境
+```
+# 规划
+
++ `keystone`
++ `glance`
++ `placement`
++ `nova`
++ `neutron`
++ `dashboard`
++ `cinder`
++ `swift`
+
+---
+# 部署`OpenStack`基本环境
+
+> 文档内`Environment`
 
 ## 部署时间
 
 ```shell
-yum install -y chrony
+yum install -y chrony vim bash-completion net-tools
 ```
 
 修改配置文件
 
 ```shell
 vim /etc/chrony.conf
+```
+
+```ini
+pool ntp6.aliyun.com iburst
 ```
 
 ![时间](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/002.jpg)
@@ -92,6 +128,8 @@ vim /etc/chrony.conf
 ```shell
 systemctl restart chronyd
 chronyc sources -v
+date
+clock -w
 ```
 
 > 完成本阶段的脚本【双节点执行】
@@ -174,8 +212,7 @@ character-set-server = utf8
 写入配置后，重启并配置数据库自启动
 
 ```shell
-systemctl enable mariadb.service
-systemctl start mariadb.service
+systemctl enable --now mariadb.service
 ss -tnl # 看到有3306表示成功
 ```
 
@@ -207,7 +244,7 @@ systemctl enable mariadb.service
 systemctl start mariadb.service
 ```
 
-以下仍有需要手工的部分：（初始化数据库）
+**以下仍有需要手工的部分：（初始化数据库）**
 
 ```shell
 mysql_secure_installation
@@ -242,6 +279,8 @@ rabbitmqctl add_user openstack 000000
 rabbitmqctl set_permissions openstack ".*" ".*" ".*"
 ```
 
+---
+
 > 完成本阶段的脚本
 
 ```shell
@@ -268,11 +307,24 @@ yum install -y memcached python3-memcached
 vim /etc/sysconfig/memcached
 ```
 
+示例：
+
+```ini
+PORT="11211"
+USER="memcached"
+MAXCONN="1024"
+CACHESIZE="64"
+OPTIONS="-l 0.0.0.0,::1"
+```
+
 启动（看到`11211`端口表示成功）
 
 ```shell
 systemctl enable --now memcached.service
+ss -tnl
 ```
+
+---
 
 > 完成本阶段的脚本
 
@@ -346,29 +398,26 @@ systemctl enable --now memcached.service
 登录数据库
 
 ```shell
-mysql -u root -p
+mysql
 ```
 
-为`keystone`创建数据库
+为`keystone`创建数据库，并为`keystone`授权，注意：以往设置的`000000`，本次设置的`keystone123`
 
 ```shell
 CREATE DATABASE keystone;
-show create database keystone; # 仅作验证
+GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'keystone123';
 ```
 
-为`keystone`授权，注意：以往设置的`000000`，本次设置的`keystone123`
+验证：
 
 ```shell
-# 这一条是赋予所有设备的keystone用户的权限
-GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'keystone123';
-# 这一条是创建本地keystone的权限，为了以后的高可用，还是给全部的比较好
-# GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'KEYSTONE_DBPASS';
+show create database keystone; # 仅作验证
 ```
 
 安装（`dnf`和`yum`完全等价）
 
 ```shell
-dnf install -y openstack-keystone httpd python3-mod_wsgi
+yum install -y openstack-keystone httpd python3-mod_wsgi
 ```
 
 然后会有一个配置文件，只需要取需要的即可，先把原来的备份
@@ -431,7 +480,15 @@ keystone-manage bootstrap --bootstrap-password 000000 \
 vi /etc/httpd/conf/httpd.conf
 ```
 
-软连接`Keystone` 的 `WSGI `配置文件到`Apache HTTP` 服务器的配置目录，`-s`表示软连接，软链接我们修改一个位置其他位置也会同步修改
+进入后，修改`97`行
+
+```ini
+ServerName controller
+```
+
+软连接`Keystone` 的 `WSGI `配置文件到`Apache HTTP` 服务器的配置目录
+
+`-s`表示软连接，软链接我们修改一个位置其他位置也会同步修改
 
 ```shell
 ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/
@@ -476,7 +533,7 @@ openstack domain create --description "An Example Domain" example
 openstack project create --domain default --description "Service Project" service
 ```
 
-创建 OpenStack 客户端环境脚本(其实和之前那一步一样的，只是更详细点，可以直接配置这个)
+创建 `OpenStack` 客户端环境脚本(其实和之前那一步一样的，只是更详细点，可以直接配置这个)
 
 ```shell
 vim /etc/keystone/admin-openrc.sh
@@ -501,6 +558,10 @@ export OS_IMAGE_API_VERSION=2
 ```shell
 openstack token issue
 ```
+
+提示：至此是没有问题的
+
+---
 
 > 本阶段脚本（暂时不能一键执行，放这里只是为了方便粘贴）
 
@@ -564,11 +625,9 @@ openstack token issue
 创建数据库并赋予权限
 
 ```shell
-mysql -u root -p
-
+mysql
 CREATE DATABASE glance;
 GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'glance123';
-# GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost'  IDENTIFIED BY 'GLANCE_DBPASS';
 quit
 ```
 
@@ -681,13 +740,15 @@ wget http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
 
 ```shell
 glance image-create --name "cirros" \
-> --file cirros-0.4.0-x86_64-disk.img \
-> --disk-format qcow2 --container-format bare \
-> --visibility public
+--file cirros-0.4.0-x86_64-disk.img \
+--disk-format qcow2 --container-format bare \
+--visibility public
 
 # 验证
 glance image-list
 ```
+
+注意：至此是没有任何问题
 
 ---
 
@@ -714,24 +775,24 @@ quit
 openstack user create --domain default --password placement placement # 前面是密码，后面是用户
 ```
 
+将 `placement` 用户分配给 `service` 项目，并赋予 `admin` 角色（这个是`scheduler`和`conductor`服务起不来的原因）
+
+```shell
+openstack role add --project service --user placement admin
+```
+
 创建一个名为 `placement` 的服务
 
 ```shell
 openstack service create --name placement --description "Placement API" placement
 ```
 
-为 **Placement** 服务创建端点
+为 **Placement** 服务创建端点（直接复制执行即可，官方文档的）
 
 ```shell
 openstack endpoint create --region RegionOne placement public http://controller:8778
 openstack endpoint create --region RegionOne placement internal http://controller:8778
 openstack endpoint create --region RegionOne placement admin http://controller:8778
-```
-
-将 `placement` 用户分配给 `service` 项目，并赋予 `admin` 角色（这个是`scheduler`和`conductor`服务起不来的原因）
-
-```shell
-openstack role add --project service --user placement admin
 ```
 
 安装
@@ -743,8 +804,14 @@ yum install -y openstack-placement-api
 筛选出参数
 
 ```shell
+cp /etc/placement/placement.conf{,.bak}
+```
+
+```shell
 grep -Ev "^$|#" /etc/placement/placement.conf.bak > /etc/placement/placement.conf
 ```
+
+编辑文件：`vim /etc/placement/placement.conf`
 
 添加如下配置
 
@@ -770,7 +837,7 @@ connection = mysql+pymysql://placement:placement123@controller/placement
 
 ```shell
 [root@controller ~]# su -s /bin/sh -c "placement-manage db sync" placement
-# 报一以下回显，不用管
+# 报以下回显，不用管
 /usr/lib/python3.9/site-packages/pymysql/cursors.py:170: Warning: (1280, "Name 'alembic_version_pkc' ignored for PRIMARY key.")
   result = self._query(query)
 ```
@@ -817,6 +884,10 @@ placement-status upgrade check
 | Details: None                    |
 +----------------------------------+
 ```
+
+注意：至此没有问题
+
+---
 
 ## nova
 
@@ -878,6 +949,10 @@ yum install -y openstack-nova-api openstack-nova-conductor openstack-nova-novncp
 过滤参数
 
 ```shell
+cp /etc/nova/nova.conf{,.bak}
+```
+
+```shell
 grep -Ev "^$|#" /etc/nova/nova.conf.bak > /etc/nova/nova.conf
 ```
 
@@ -915,6 +990,9 @@ project_name = service
 username = nova
 password = nova
 
+[oslo_concurrency]
+lock_path = /var/lib/nova/tmp
+
 [placement]
 region_name = RegionOne
 project_domain_name = Default
@@ -951,6 +1029,18 @@ systemctl enable --now \
     openstack-nova-novncproxy.service
 ```
 
+方便重启
+
+```shell
+systemctl restart \
+    openstack-nova-api.service \
+    openstack-nova-scheduler.service \
+    openstack-nova-conductor.service \
+    openstack-nova-novncproxy.service
+```
+
+
+
 `vnc`的端口是`6080`，还有个`8774`看到就算成功（暂时不理解，这些端口代表的服务）
 
 ### 计算节点
@@ -964,8 +1054,14 @@ yum install -y openstack-nova-compute
 配置（配置较多，要小心）
 
 ```shell
+cp /etc/nova/nova.conf{,.bak}
+```
+
+```shell
 grep -Ev "^$|#" /etc/nova/nova.conf.bak > /etc/nova/nova.conf
 ```
+
+修改配置文件`vim /etc/nova/nova.conf`
 
 详细内容
 
@@ -997,7 +1093,7 @@ password = nova
 enabled = true
 server_listen = 0.0.0.0
 server_proxyclient_address = $my_ip
-novncproxy_base_url = http://controller:6080/vnc_auto.html
+novncproxy_base_url = http://192.168.100.10:6080/vnc_auto.html
 
 [glance]
 api_servers = http://controller:9292
@@ -1069,6 +1165,21 @@ systemctl restart openstack-nova-compute.service
 
 在`controller`上查看一下，如何有哪些计算节点
 
+```shell
+openstack compute service list --service nova-compute
+```
+
+如下
+
+```shell
+[root@controller ~]# openstack compute service list --service nova-compute
++----+--------------+---------+------+---------+-------+----------------------------+
+| ID | Binary       | Host    | Zone | Status  | State | Updated At                 |
++----+--------------+---------+------+---------+-------+----------------------------+
+|  9 | nova-compute | compute | nova | enabled | up    | 2024-10-29T11:07:47.000000 |
++----+--------------+---------+------+---------+-------+----------------------------+
+```
+
 同步。主机发现【`controller`执行】
 
 ```shell
@@ -1103,6 +1214,8 @@ openstack compute service list
 +----+----------------+------------+----------+---------+-------+----------------------------+
 ```
 
+注意：执行到此没有问题
+
 ## neutron
 
 ### 控制节点
@@ -1133,7 +1246,7 @@ openstack role add --project service --user neutron admin
 openstack service create --name neutron --description "OpenStack Networking" network
 ```
 
-为这个服务创建三个端点
+为这个服务创建三个端点（分别是：内网、公网、广域网）
 
 ```shell
 openstack endpoint create --region RegionOne network public http://controller:9696
@@ -1146,11 +1259,17 @@ openstack endpoint create --region RegionOne network admin http://controller:969
 安装相应的服务
 
 ```shell
-yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ebtables
-yum install -y openstack-neutron-linuxbridge.noarch
+# yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch ebtables
+yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge ebtables
+# yum install -y openstack-neutron-linuxbridge.noarch
 ```
 
-记录`yum remove python3-ovs`，移除了冲突包
+有一个报错：（后面会解决）
+
+```shell
+Couldn't write '1' to 'net/bridge/bridge-nf-call-ip6tables', ignoring: No such file or directory
+Couldn't write '1' to 'net/bridge/bridge-nf-call-iptables', ignoring: No such file or directory
+```
 
 备份、过滤
 
@@ -1159,12 +1278,13 @@ cp /etc/neutron/neutron.conf{,.bak}
 grep -Ev "^$|#" /etc/neutron/neutron.conf.bak > /etc/neutron/neutron.conf
 ```
 
-添加配置信息
+添加配置信息`vim /etc/neutron/neutron.conf`
 
 ```ini
 [DEFAULT]
 core_plugin = ml2
 service_plugins = router
+allow_overlapping_ips = true
 transport_url = rabbit://openstack:000000@controller
 auth_strategy = keystone
 notify_nova_on_port_status_changes = true
@@ -1208,7 +1328,7 @@ cp /etc/neutron/plugins/ml2/ml2_conf.ini{,.bak}
 grep -Ev "^$|#" /etc/neutron/plugins/ml2/ml2_conf.ini.bak > /etc/neutron/plugins/ml2/ml2_conf.ini
 ```
 
-添加配置信息
+添加配置信息`vim /etc/neutron/plugins/ml2/ml2_conf.ini`
 
 ```ini
 [ml2]
@@ -1240,15 +1360,15 @@ cp /etc/neutron/plugins/ml2/linuxbridge_agent.ini{,.bak}
 grep -Ev "^$|#" /etc/neutron/plugins/ml2/linuxbridge_agent.ini.bak > /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 ```
 
-添加配置信息
+添加配置信息`vim /etc/neutron/plugins/ml2/linuxbridge_agent.ini`
 
 ```ini
 [linux_bridge]
 bridge_interface_mappings = extnal:eth0 # 注意要和上一步定义的一样，而且还要看自己的网卡名字
 
 [vxlan]
-local_ip = 192.168.100.10
 enable_vxlan = true
+local_ip = 192.168.100.10
 l2_population = true
 
 [securitygroup]
@@ -1257,7 +1377,7 @@ enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 ```
 
-配置内核开放
+配置内核开放（注意：手工在结尾处加上`EOF`表示结束）
 
 ```shell
 tee -a /etc/sysctl.conf <<EOF
@@ -1303,6 +1423,8 @@ interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true
 ```
+
+注意：至此，没有出现分歧现象
 
 ####  配置元数据代理
 
@@ -1363,13 +1485,31 @@ systemctl restart openstack-nova-api.service
 
 ```shell
 systemctl enable neutron-server.service \
-  neutron-openvswitch-agent.service neutron-dhcp-agent.service \
+  neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
   neutron-metadata-agent.service neutron-l3-agent.service
-  
-systemctl start neutron-server.service \
-  neutron-openvswitch-agent.service neutron-dhcp-agent.service \
+# 方便重启
+systemctl restart neutron-server.service \
+  neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
   neutron-metadata-agent.service neutron-l3-agent.service
 ```
+
+报错：（但是最后成功了，不用管）
+
+```shell
+==> /var/log/neutron/metadata-agent.log <==
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent   File "/usr/lib/python3.9/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 661, in _send
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent     result = self._waiter.wait(msg_id, timeout,
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent   File "/usr/lib/python3.9/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 551, in wait
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent     message = self.waiters.get(msg_id, timeout=timeout)
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent   File "/usr/lib/python3.9/site-packages/oslo_messaging/_drivers/amqpdriver.py", line 427, in get
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent     raise oslo_messaging.MessagingTimeout(
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent oslo_messaging.exceptions.MessagingTimeout: Timed out waiting for a reply to message ID c12fb6e656654662b5d7f78231d9a2e8
+2024-10-29 19:53:27.330 23645 ERROR neutron.agent.metadata.agent 
+2024-10-29 19:53:27.333 23645 WARNING oslo.service.loopingcall [-] Function 'neutron.agent.metadata.agent.UnixDomainMetadataProxy._report_state' run outlasted interval by 30.08 sec
+2024-10-29 19:53:27.342 23645 INFO neutron.agent.metadata.agent [-] Successfully reported state after a previous failure.
+```
+
+注意：至此没有出现分歧
 
 ### 计算节点
 
@@ -1388,7 +1528,7 @@ cp /etc/neutron/neutron.conf{,.bak}
 grep -Ev "^$|#" /etc/neutron/neutron.conf.bak > /etc/neutron/neutron.conf
 ```
 
-添加配置信息
+添加配置信息`vim /etc/neutron/neutron.conf`
 
 ```ini
 [DEFAULT]
@@ -1412,39 +1552,22 @@ lock_path = /var/lib/neutron/tmp
 
 #### 配置三层代理
 
-记录`yum remove python3-ovs`，移除了冲突包
-
-```shell
-yum install -y openstack-neutron-openvswitch # 实测安装了这一个才有后面的文件，这个是新的，不安装直接用linuxbridge
-```
-
-`服务一`【不要用这个】
-
 备份、过滤
-
-```shell
-cp /etc/neutron/plugins/ml2/openvswitch_agent.ini{,.bak}
-grep -Ev "^$|#" /etc/neutron/plugins/ml2/openvswitch_agent.ini.bak > /etc/neutron/plugins/ml2/openvswitch_agent.ini
-```
-
-> `注意：`这俩是一样的，一个新一个旧，`linuxbridge`是旧的
 
 ```shell
 cp /etc/neutron/plugins/ml2/linuxbridge_agent.ini{,.bak}
 grep -Ev "^$|#" /etc/neutron/plugins/ml2/linuxbridge_agent.ini.bak > /etc/neutron/plugins/ml2/linuxbridge_agent.ini
 ```
 
-> 后续的步骤都一样
-
-添加配置信息（注意：openvswitch_agent和）
+添加配置信息`vim /etc/neutron/plugins/ml2/linuxbridge_agent.ini`
 
 ```ini
 [linux_bridge]
-bridge_interface_mappings = extnal:eth0
+physical_interface_mappings = extnal:eth0
 
 [vxlan]
-local_ip = 192.168.100.20
 enable_vxlan = true
+local_ip = 192.168.100.20
 l2_population = true
 
 [securitygroup]
@@ -1470,7 +1593,7 @@ sysctl -p
 
 #### 配置 Compute 服务以使用 Networking 服务
 
-新增以下配置`/etc/nova/nova.conf`
+新增以下配置`vim /etc/nova/nova.conf`
 
 ```ini
 [neutron]
@@ -1492,27 +1615,38 @@ password = neutron
 systemctl restart openstack-nova-compute.service
 ```
 
-启动`neutron`（`二选一`）
+注意：到这一步完全一致
+
+启动`neutron`
 
 ```shell
-systemctl enable --now neutron-openvswitch-agent.service
 systemctl enable --now neutron-linuxbridge-agent.service
 ```
 
-下图是`linuxbridge`的日志
-
-![报错解决](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/010.jpg)
-
-验证【去controller节点】
+验证（在`controller`节点验证）
 
 ```shell
 openstack network agent list
 neutron agent-list
 ```
 
+完美成功
+
+`new_neutron_success.png`
+
+---
+
+这些不用管
+
+下图是`linuxbridge`的日志
+
+![报错解决](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/010.jpg)
+
 没用`down`或`false`表示成功
 
-由于部署过程出现些小差错，应当是两个`linuxbridge-agent`、一个`neutron-13-agent`，一个`dhcp-agent`，一个`metadata-agent`
+~~由于部署过程出现些小差错，应当是两个`linuxbridge-agent`、一个`neutron-13-agent`，一个`dhcp-agent`，一个`metadata-agent`~~
+
+---
 
 ## dashboard
 
