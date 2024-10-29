@@ -2,6 +2,9 @@
 title: 记录常用的Markdown语句
 date: 2024-10-25 17:34:17
 tags:
+  - markdown
+cover: https://raw.gitmirror.com/ByteQuestor/picture/main/markdown.png
+description: markdown功能很强大，在此记录一下常用的命令及效果
 ---
 # Markdown篇
 
