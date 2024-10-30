@@ -1634,6 +1634,8 @@ neutron agent-list
 ![成功](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/new_neutron_success.png)
 ---
 
+---
+
 这些不用管
 
 下图是`linuxbridge`的日志
@@ -1838,6 +1840,78 @@ openstack security group rule create --protocol tcp, --port-range <port_range> -
 
 
 这样创建的云主机是可以用`shell`连接的，还可以上网
+
+> 这里遇到报错，一直说是网卡的问题，暂时无力解决`nova-compute.log`完整报错
+
+```shell
+2024-10-30 11:49:58.544 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] 
+2024-10-30 11:49:58.545 2341 INFO nova.compute.manager [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Terminating instance
+2024-10-30 11:49:58.684 2341 INFO nova.virt.libvirt.driver [-] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Instance destroyed successfully.
+2024-10-30 11:49:58.685 2341 INFO nova.virt.libvirt.driver [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Deleting instance files /usr/lib/python3.9/site-packages/instances/d6c4fa69-ca28-4411-a11f-7d0cced9cfd3_del
+2024-10-30 11:49:58.685 2341 INFO nova.virt.libvirt.driver [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Deletion of /usr/lib/python3.9/site-packages/instances/d6c4fa69-ca28-4411-a11f-7d0cced9cfd3_del complete
+2024-10-30 11:49:58.730 2341 INFO nova.compute.manager [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Took 0.05 seconds to destroy the instance on the hypervisor.
+2024-10-30 11:49:58.772 2341 INFO nova.compute.manager [-] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Took 0.04 seconds to deallocate network for instance.
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Failed to build and run instance: nova.exception.PortBindingFailed: Binding failed for port b4704c31-3f11-4027-9ba4-47df3c1dbd2e, please check neutron logs for more information.
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Traceback (most recent call last):
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/compute/manager.py", line 2441, in _build_and_run_instance
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     self.driver.spawn(context, instance, image_meta,
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/virt/libvirt/driver.py", line 3541, in spawn
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     xml = self._get_guest_xml(context, instance, network_info,
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/virt/libvirt/driver.py", line 6161, in _get_guest_xml
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     network_info_str = str(network_info)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/model.py", line 601, in __str__
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     return self._sync_wrapper(fn, *args, **kwargs)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/model.py", line 584, in _sync_wrapper
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     self.wait()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/model.py", line 616, in wait
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     self[:] = self._gt.wait()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/eventlet/greenthread.py", line 181, in wait
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     return self._exit_event.wait()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/eventlet/event.py", line 125, in wait
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     result = hub.switch()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/eventlet/hubs/hub.py", line 313, in switch
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     return self.greenlet.switch()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/eventlet/greenthread.py", line 221, in main
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     result = function(*args, **kwargs)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/utils.py", line 675, in context_wrapper
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     return func(*args, **kwargs)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/compute/manager.py", line 1716, in _allocate_network_async
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     six.reraise(*exc_info)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/six.py", line 719, in reraise
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     raise value
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/compute/manager.py", line 1694, in _allocate_network_async
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     nwinfo = self.network_api.allocate_for_instance(
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/neutronv2/api.py", line 1037, in allocate_for_instance
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     created_port_ids = self._update_ports_for_instance(
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/neutronv2/api.py", line 1169, in _update_ports_for_instance
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     vif.destroy()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/oslo_utils/excutils.py", line 220, in __exit__
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     self.force_reraise()
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/oslo_utils/excutils.py", line 196, in force_reraise
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     six.reraise(self.type_, self.value, self.tb)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/six.py", line 719, in reraise
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     raise value
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/neutronv2/api.py", line 1138, in _update_ports_for_instance
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     updated_port = self._update_port(
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/neutronv2/api.py", line 513, in _update_port
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     _ensure_no_port_binding_failure(port)
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]   File "/usr/lib/python3.9/site-packages/nova/network/neutronv2/api.py", line 236, in _ensure_no_port_binding_failure
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3]     raise exception.PortBindingFailed(port_id=port['id'])
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] nova.exception.PortBindingFailed: Binding failed for port b4704c31-3f11-4027-9ba4-47df3c1dbd2e, please check neutron logs for more information.
+2024-10-30 11:49:58.847 2341 ERROR nova.compute.manager [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] 
+2024-10-30 11:49:59.055 2341 INFO nova.compute.manager [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] [instance: d6c4fa69-ca28-4411-a11f-7d0cced9cfd3] Took 0.04 seconds to deallocate network for instance.
+2024-10-30 11:49:59.170 2341 INFO nova.scheduler.client.report [req-e37fab39-0d4f-4b0f-93bc-5ce7074c01a3 c051161a8cef484ebb4911b8725bedf9 b34a554fc8ab4a14b22f6ced9981b2d5 - default default] Deleted allocation for instance d6c4fa69-ca28-4411-a11f-7d0cced9cfd3
+2024-10-30 11:58:47.702 2341 INFO nova.compute.manager [req-12c0bdc7-71c0-423c-beba-19d3dec722a0 - - - - -] Updating bandwidth usage cache
+2024-10-30 11:58:47.715 2341 INFO nova.compute.manager [req-12c0bdc7-71c0-423c-beba-19d3dec722a0 - - - - -] Bandwidth usage not supported by libvirt.LibvirtDriver.
+```
+
+# 小娱乐
+
+可以改一下`openstack`的图标
+
+> `openstack`的图标都是`svg`，所以可以右击`logo.svg`，然后看一下他的像素大小（搜索`viewBox`就能看到，前两个数字代表左上角坐标，后面两个是宽和高）
+
+然后去`PS`设计一下，导出一个透明背景的`png`，再去`lnkscape`过一下，导出为`svg`，上传到`openstack`的图片路径替换就行了
 
 ---
 
