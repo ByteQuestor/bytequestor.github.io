@@ -101,3 +101,7 @@ theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
+deploy:
+  type: git
+  repo: https://github.com/ByteQuestor/ByteQuestor.github.io.git
+  branch: gh-pages
