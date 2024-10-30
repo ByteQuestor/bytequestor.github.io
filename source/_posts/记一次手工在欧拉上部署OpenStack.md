@@ -1133,7 +1133,7 @@ systemctl start libvirtd
 systemctl start libvirtd.service openstack-nova-compute.service
 ```
 
-`报错`	解决：显示没用目录，直接创建一个`/usr/lib/python3.9/site-packages/instances`，并给`nova`权限去管理
+`报错`解决：显示没用目录，直接创建一个`/usr/lib/python3.9/site-packages/instances`，并给`nova`权限去管理
 
 ```shell
 [root@compute ~]# tail -f  /var/log/nova/nova-compute.log 
@@ -1827,6 +1827,12 @@ chown -R nova.nova $文件夹
 
 ```shell
 chown -R nova.nova /usr/lib/python3.9/site-packages/
+sudo chown -R nova:nova /usr/lib/python3.9/site-packages/instances/
+sudo chmod -R 775 /usr/lib/python3.9/site-packages/instances/
+```
+
+```shell
+openstack security group rule create --protocol tcp, --port-range <port_range> --remote-ip <ip_range> <new_security_group_name>
 ```
 
 
