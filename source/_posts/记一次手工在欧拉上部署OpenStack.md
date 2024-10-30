@@ -1912,6 +1912,8 @@ openstack security group rule create --protocol tcp, --port-range <port_range> -
 > `openstack`的图标都是`svg`，所以可以右击`logo.svg`，然后看一下他的像素大小（搜索`viewBox`就能看到，前两个数字代表左上角坐标，后面两个是宽和高）
 
 然后去`PS`设计一下，导出一个透明背景的`png`，再去`lnkscape`过一下，导出为`svg`，上传到`openstack`的图片路径替换就行了
+![登录界面](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/logo.png)
+![左上角图标](https://raw.gitmirror.com/ByteQuestor/picture/main/OpenStackByHandImg/logo-splash.png)
 
 ---
 
