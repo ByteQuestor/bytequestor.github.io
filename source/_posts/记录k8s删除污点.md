@@ -4,7 +4,7 @@ date: 2024-11-03 15:14:37
 tags:
     - k8s
 description: 因为本地内存不过，练习k8s只能开一台master，需要删除污点
-cover: https://raw.gitmirror.com/ByteQuestor/picture/main/CLanage/default.jpg
+cover: https://raw.gitmirror.com/ByteQuestor/picture/main/kubernetes/k8s.jpg
 ---
 在 Kubernetes 中，可以使用kubectl taint命令来删除节点上的污点。
 以下是删除名为node-role.kubernetes.io/master污点的具体步骤：
