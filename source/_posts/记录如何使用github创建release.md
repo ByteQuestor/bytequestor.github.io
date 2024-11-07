@@ -13,7 +13,7 @@ cover: https://raw.gitmirror.com/ByteQuestor/picture/main/GitHub-Logo.png
 
 然后，导出成品到成品文件夹
 
-![图片](https://raw.gitmirror.com/ByteQuestor/picture/blob/main/createrelease/1.png)
+![图片](https://raw.gitmirror.com/ByteQuestor/picture/main/createrelease/1.png)
 # 创建成品分支
 
 这个分支，将直接被全部打包为一个`release`
@@ -26,7 +26,7 @@ cover: https://raw.gitmirror.com/ByteQuestor/picture/main/GitHub-Logo.png
 git checkout -b pdf
 ```
 
-![图片](https://raw.gitmirror.com/ByteQuestor/picture/blob/main/createrelease/2.png)
+![图片](https://raw.gitmirror.com/ByteQuestor/picture/main/createrelease/2.png)
 # 上传成品
 
 ## 提交更改到本地分支
@@ -47,10 +47,10 @@ git push origin pdf
 
 此图是个私有仓库
 
-![图片](https://raw.gitmirror.com/ByteQuestor/picture/blob/main/createrelease/4.png)
+![图片](https://raw.gitmirror.com/ByteQuestor/picture/main/createrelease/4.png)
 上传完毕，就可以创建`release`了
 
 # 创建`release`
 
-![图片](https://raw.gitmirror.com/ByteQuestor/picture/blob/main/createrelease/5.png)
-![图片](https://raw.gitmirror.com/ByteQuestor/picture/blob/main/createrelease/6.png)
+![图片](https://raw.gitmirror.com/ByteQuestor/picture/main/createrelease/5.png)
+![图片](https://raw.gitmirror.com/ByteQuestor/picture/main/createrelease/6.png)
