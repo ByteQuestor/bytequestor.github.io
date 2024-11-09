@@ -12,11 +12,11 @@ cover: https://raw.gitmirror.com/ByteQuestor/picture/main/kubernetes/k8s.jpg
 
 ##  软件包
 
-[1.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/1.png)
+![1.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/1.png)
 
 ## 配置本地`yum`仓库
 
-[2.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/2.png)
+![2.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/2.png)
 
 ```shell
 mkdir /opt/python && cat >> /etc/yum.repos.d/local.repo << EOF
@@ -40,15 +40,15 @@ yum install -y python3
 
 注意：此时安装成功后，直接按照安装提示来会报错
 
-[3.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/3.png)
+![3.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/3.png)
 
-[5.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/5.png)
+![5.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/5.png)
 
 ```shell
 python3 -m pip --version
 ```
 
-[4.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/4.png)
+![4.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/4.png)
 
 因为`pip`的版本太低，升级一下即可解决
 
@@ -56,9 +56,9 @@ python3 -m pip --version
 python3 -m pip install --upgrade pip
 ```
 
-[6.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/6.png)
+![6.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/6.png)
 
-[7.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/7.png)
+![7.png](https://raw.gitmirror.com/ByteQuestor/picture/main/k8sPython/7.png)
 
 # pip换国内源
 
