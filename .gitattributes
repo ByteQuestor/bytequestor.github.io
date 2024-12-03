@@ -1,0 +1,5 @@
+text复制代码# 强制所有文本文件使用 LF 作为行尾符
+* text=auto eol=lf
+
+# 如果有需要，特别指定某些文件使用 CRLF
+# *.bat text eol=crlf
